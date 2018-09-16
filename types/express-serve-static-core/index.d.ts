@@ -16,7 +16,62 @@ declare global {
         // These open interfaces may be extended in an application-specific manner via declaration merging.
         // See for example method-override.d.ts (https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/method-override/index.d.ts)
         interface Request { }
-        interface Response { }
+        interface Response { 
+            app : Application;
+            headersSent : Boolean;
+            locals : Object;
+            //append(field : String) : any
+            append(field : String, value?: String | Array<String | any>) : any
+            //attachment() : any
+            attachment(filename? : String) : any
+            cookie(name : String, value : String | Object, options? : CookieOptions) : any
+            clearCookie(name : String, options? : CookieOptions) : any
+            download(path : String, filename? : String, options? : Response.SendFileOptions, fn? : Function) : any
+            end(data? : any, encoding? : any) : any
+            format(object : Object) : any
+            get(field : String) : String
+            json(body? : null | Object) : any
+            jsonp(body? : null | Object) : any
+            links(links : Object) : any
+            location(path : String) : any
+            redirect(status : number, path : String) : any
+            redirect(path : String) : any
+            render(view : String, locals? : Object, callback? : Response.RenderCallback) : any
+            send(body? : Buffer | Object | String | Array<any>) : any
+            sendFile(path : String, options? : Response.SendFileOptions, fn? : Function) : any
+            sendStatus(statusCode : number) : any
+            set(field : String, value : String) : any
+            set(fields : Object) : any
+            header(field : String, value : String) : any
+            header(fields : Object) : any
+            status(code : number) : Response
+            type(type : String) : any
+            vary(field : String) : any
+        }
+        namespace Response {
+            interface CookieOptions {
+                domain? : String;
+                encode? : Function;
+                expires? : Date;
+                httpOnly? : Boolean;
+                maxAge? : Number;
+                path? : String;
+                secure? : Boolean;
+                signed? : Boolean;
+                sameSite? : Boolean | String;
+            }
+            interface SendFileOptions {
+                maxAge? : String | number;
+                root? : String | any;
+                lastModified? : Boolean | any;
+                headers? : Object;
+                dotfiles? : "annoy" | "deny" | "ignore";
+                acceptRanges? : Boolean;
+                cacheControl? : Boolean;
+                immutable? : Boolean;
+            }
+            type RenderCallback = (err : any, html : String) => any
+        }
         interface Application { }
     }
 }
@@ -24,6 +79,9 @@ declare global {
 import * as http from "http";
 import { EventEmitter } from "events";
 import { Options as RangeParserOptions, Result as RangeParserResult, Ranges as RangeParserRanges } from "range-parser";
+import { endianness } from "os";
+import { format } from "util";
+import { linkSync } from "fs";
 
 export interface NextFunction {
     // tslint:disable-next-line callable-types (In ts2.1 it thinks the type alias has no call signatures)
